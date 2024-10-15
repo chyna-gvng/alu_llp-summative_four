@@ -48,7 +48,7 @@ int main() {
             case 1: // Add Job
                 job = input_job();
                 add_job(&bc, job);
-                printf("Job added successfully with ID: %s\n", bc.head->job.id);
+                printf("Job added successfully.\n");
                 break;
             case 2: // List Jobs
                 list_jobs(&bc);
