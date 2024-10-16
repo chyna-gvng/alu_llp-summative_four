@@ -13,21 +13,34 @@ void print_menu() {
     printf("Enter your choice: ");
 }
 
+int flush_input() {
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF);  // Clear stdin
+    return 0;
+}
+
 // Function to input job details from the user
 Job input_job() {
     Job job;
+    
+    flush_input();  // Ensure stdin is clear before taking input
+    
     printf("Enter Job Title: ");
     fgets(job.title, sizeof(job.title), stdin);
-    job.title[strcspn(job.title, "\n")] = 0; // Remove newline
+    job.title[strcspn(job.title, "\n")] = 0;  // Remove newline character
+    
     printf("Enter Company: ");
     fgets(job.company, sizeof(job.company), stdin);
-    job.company[strcspn(job.company, "\n")] = 0;
+    job.company[strcspn(job.company, "\n")] = 0;  // Remove newline character
+    
     printf("Enter Location: ");
     fgets(job.location, sizeof(job.location), stdin);
-    job.location[strcspn(job.location, "\n")] = 0;
+    job.location[strcspn(job.location, "\n")] = 0;  // Remove newline character
+    
     printf("Enter Job Description: ");
     fgets(job.description, sizeof(job.description), stdin);
-    job.description[strcspn(job.description, "\n")] = 0;
+    job.description[strcspn(job.description, "\n")] = 0;  // Remove newline character
+    
     return job;
 }
 
