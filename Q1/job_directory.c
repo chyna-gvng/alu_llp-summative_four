@@ -1,5 +1,4 @@
 #include "job_directory.h"
-#include <ctype.h>
 
 // Convert a string to lowercase
 void to_lowercase(char *str) {
@@ -12,6 +11,32 @@ void to_lowercase(char *str) {
 void init_blockchain(Blockchain* bc) {
     bc->head = NULL;
     bc->job_count = 0;  // Initialize job count
+}
+
+// Calculate the hash of a block
+char* calculate_hash(Block* block) {
+    static char hash[HASH_SIZE + 1];
+    char buffer[1024];
+    SHA256_CTX sha256;
+    unsigned char hash_bytes[SHA256_DIGEST_LENGTH];
+    
+    // Concatenate block data into a single string
+    snprintf(buffer, sizeof(buffer), "%d%ld%s%s%s%s%s%s",
+             block->index, block->timestamp, block->job.id,
+             block->job.title, block->job.company, block->job.location,
+             block->job.description, block->prev_hash);
+    
+    // Calculate SHA256 hash
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, buffer, strlen(buffer));
+    SHA256_Final(hash_bytes, &sha256);
+    
+    // Convert hash bytes to hexadecimal string
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        sprintf(hash + (i * 2), "%02x", hash_bytes[i]);
+    }
+    
+    return hash;
 }
 
 // Add a new job to the blockchain
@@ -160,6 +185,13 @@ int modify_job(Blockchain* bc, const char* id, Job new_job) {
             strcpy(new_job.id, current->job.id);  // Preserve the original ID
             current->job = new_job;
             strcpy(current->hash, calculate_hash(current));
+            
+            // Update the prev_hash of the next block if it exists
+            if (current->next) {
+                strcpy(current->next->prev_hash, current->hash);
+                strcpy(current->next->hash, calculate_hash(current->next));
+            }
+            
             return 1;  // Job found and modified
         }
         current = current->next;
@@ -177,8 +209,18 @@ int delete_job(Blockchain* bc, const char* id) {
         if (strcmp(current->job.id, id) == 0) {
             if (prev) {
                 prev->next = current->next;
+                // Update the prev_hash of the next block if it exists
+                if (current->next) {
+                    strcpy(current->next->prev_hash, prev->hash);
+                    strcpy(current->next->hash, calculate_hash(current->next));
+                }
             } else {
                 bc->head = current->next;
+                // If deleting the first block, update the prev_hash of the new first block
+                if (bc->head) {
+                    strcpy(bc->head->prev_hash, "");
+                    strcpy(bc->head->hash, calculate_hash(bc->head));
+                }
             }
             free(current);
             return 1;  // Job found and deleted
@@ -201,12 +243,16 @@ int verify_integrity(Blockchain* bc) {
         strcpy(calculated_hash, calculate_hash(current));
         if (strcmp(calculated_hash, current->hash) != 0) {
             printf("Integrity breach detected at block %d\n", current->index);
+            printf("Stored hash: %s\n", current->hash);
+            printf("Calculated hash: %s\n", calculated_hash);
             return 0;
         }
         
         // Verify that the prev_hash matches the hash of the previous block
-        if (strcmp(current->prev_hash, prev_hash) != 0) {
+        if (current->index > 0 && strcmp(current->prev_hash, prev_hash) != 0) {
             printf("Integrity breach detected at block %d\n", current->index);
+            printf("Stored previous hash: %s\n", current->prev_hash);
+            printf("Actual previous hash: %s\n", prev_hash);
             return 0;
         }
         
@@ -234,30 +280,4 @@ void print_blockchain(Blockchain* bc) {
         printf("Hash: %s\n\n", current->hash);
         current = current->next;
     }
-}
-
-// Calculate the hash of a block
-char* calculate_hash(Block* block) {
-    static char hash[HASH_SIZE + 1];
-    char buffer[1024];
-    SHA256_CTX sha256;
-    unsigned char hash_bytes[SHA256_DIGEST_LENGTH];
-    
-    // Concatenate block data into a single string
-    snprintf(buffer, sizeof(buffer), "%d%ld%s%s%s%s%s%s",
-             block->index, block->timestamp, block->job.id,
-             block->job.title, block->job.company, block->job.location,
-             block->job.description, block->prev_hash);
-    
-    // Calculate SHA256 hash
-    SHA256_Init(&sha256);
-    SHA256_Update(&sha256, buffer, strlen(buffer));
-    SHA256_Final(hash_bytes, &sha256);
-    
-    // Convert hash bytes to hexadecimal string
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        sprintf(hash + (i * 2), "%02x", hash_bytes[i]);
-    }
-    
-    return hash;
 }
