@@ -1,5 +1,3 @@
-// job_directory.h
-
 #ifndef JOB_DIRECTORY_H
 #define JOB_DIRECTORY_H
 
