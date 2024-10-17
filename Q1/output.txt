@@ -1,0 +1,161 @@
+Script started on 2024-10-17 19:36:02+03:00 [COMMAND="./job_directory" TERM="xterm-256color" TTY="/dev/pts/1" COLUMNS="205" LINES="13"]
+
+Job Directory Blockchain Menu:
+1. Add Job
+2. List Jobs
+3. Search Jobs
+4. Modify Job
+5. Delete Job
+6. Verify Integrity
+7. Exit
+Enter your choice: 1
+
+Enter Job Title: SWE Intern
+Enter Company: JHA
+Enter Location: NRB
+Enter Job Description: Soft guru
+Job added successfully.
+
+Job Directory Blockchain Menu:
+1. Add Job
+2. List Jobs
+3. Search Jobs
+4. Modify Job
+5. Delete Job
+6. Verify Integrity
+7. Exit
+Enter your choice: 1
+
+Enter Job Title: DE Intern
+Enter Company: JHA
+Enter Location: KGL
+Enter Job Description: Data guru
+Job added successfully.
+
+Job Directory Blockchain Menu:
+1. Add Job
+2. List Jobs
+3. Search Jobs
+4. Modify Job
+5. Delete Job
+6. Verify Integrity
+7. Exit
+Enter your choice: 1
+
+Enter Job Title: BI Intern
+Enter Company: Sybyl
+Enter Location: KPL
+Enter Job Description: BI gi uru
+Job added successfully.
+
+Job Directory Blockchain Menu:
+1. Add Job
+2. List Jobs
+3. Search Jobs
+4. Modify Job
+5. Delete Job
+6. Verify Integrity
+7. Exit
+Enter your choice: 2
+Block 2
+Job ID: J0003
+Title: BI Intern
+Company: Sybyl
+Location: KPL
+Description: BI guru
+Current Hash: 39fc17c155344b27304dd075dceedb6f003fb68521b853a26b9d05c67df49db6
+Previous Hash: accf22a8c940499368e258f4b9d44efd429aec8a491015566c1d29d082e1f33f
+
+Block 1
+Job ID: J0002
+Title: DE Intern
+Company: JHA
+Location: KGL
+Description: Data guru
+Current Hash: accf22a8c940499368e258f4b9d44efd429aec8a491015566c1d29d082e1f33f
+Previous Hash: 11a52aaf4f7aa77e3442839128b02694dfa58ceee7d42ee11bd31affbce15049
+
+Block 0
+Job ID: J0001
+Title: SWE Intern
+Company: JHA
+Location: NRB
+Description: Soft guru
+Current Hash: 11a52aaf4f7aa77e3442839128b02694dfa58ceee7d42ee11bd31affbce15049
+Previous Hash: N/A
+
+
+Job Directory Blockchain Menu:
+1. Add Job
+2. List Jobs
+3. Search Jobs
+4. Modify Job
+5. Delete Job
+6. Verify Integrity
+7. Exit
+Enter your choice: 6
+Blockchain integrity verified.
+
+Job Directory Blockchain Menu:
+1. Add Job
+2. List Jobs
+3. Search Jobs
+4. Modify Job
+5. Delete Job
+6. Verify Integrity
+7. Exit
+Enter your choice: 5
+Enter Job ID to delete: J002 02
+Job deleted successfully.
+
+Job Directory Blockchain Menu:
+1. Add Job
+2. List Jobs
+3. Search Jobs
+4. Modify Job
+5. Delete Job
+6. Verify Integrity
+7. Exit
+Enter your choice: 2
+Block 2
+Job ID: J0003
+Title: BI Intern
+Company: Sybyl
+Location: KPL
+Description: BI guru
+Current Hash: 375bc9dd749df09c0b652c9529ef11771c65a601003702e4bc14970f5faa89af
+Previous Hash: 11a52aaf4f7aa77e3442839128b02694dfa58ceee7d42ee11bd31affbce15049
+
+Block 0
+Job ID: J0001
+Title: SWE Intern
+Company: JHA
+Location: NRB
+Description: Soft guru
+Current Hash: 11a52aaf4f7aa77e3442839128b02694dfa58ceee7d42ee11bd31affbce15049
+Previous Hash: N/A
+
+
+Job Directory Blockchain Menu:
+1. Add Job
+2. List Jobs
+3. Search Jobs
+4. Modify Job
+5. Delete Job
+6. Verify Integrity
+7. Exit
+Enter your choice: 6
+Blockchain integrity verified.
+
+Job Directory Blockchain Menu:
+1. Add Job
+2. List Jobs
+3. Search Jobs
+4. Modify Job
+5. Delete Job
+6. Verify Integrity
+7. Exit
+Enter your choice: 7
+Exiting program.
+
+Script done on 2024-10-17 19:39:02+03:00 [COMMAND_EXIT_CODE="0"]
