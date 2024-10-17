@@ -1,3 +1,5 @@
+// job_directory.h
+
 #ifndef JOB_DIRECTORY_H
 #define JOB_DIRECTORY_H
 
@@ -6,6 +8,7 @@
 #include <string.h>
 #include <time.h>
 #include <openssl/sha.h>
+#include <ctype.h>
 
 #define MAX_JOBS 100
 #define HASH_SIZE 64
@@ -46,5 +49,6 @@ int delete_job(Blockchain* bc, const char* id);
 int verify_integrity(Blockchain* bc);
 void print_blockchain(Blockchain* bc);
 char* calculate_hash(Block* block);
+void to_lowercase(char *str);
 
 #endif // JOB_DIRECTORY_H
