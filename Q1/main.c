@@ -13,6 +13,7 @@ void print_menu() {
     printf("Enter your choice: ");
 }
 
+// Function to clear the input buffer
 int flush_input() {
     int ch;
     while ((ch = getchar()) != '\n' && ch != EOF);  // Clear stdin
