@@ -1,4 +1,9 @@
 #include "job_directory.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define BLOCKCHAIN_FILE "blockchain.dat"
 
 // Function to print the menu options
 void print_menu() {
@@ -6,25 +11,22 @@ void print_menu() {
     printf("1. Add Job\n");
     printf("2. List Jobs\n");
     printf("3. Search Jobs\n");
-    printf("4. Modify Job\n");
-    printf("5. Delete Job\n");
-    printf("6. Verify Integrity\n");
+    printf("4. Verify Integrity\n");
+    printf("5. Save Blockchain\n");
+    printf("6. Load Blockchain\n");
     printf("7. Exit\n");
     printf("Enter your choice: ");
 }
 
 // Function to clear the input buffer
-int flush_input() {
-    int ch;
-    while ((ch = getchar()) != '\n' && ch != EOF);  // Clear stdin
-    return 0;
+void flush_input() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
 }
 
 // Function to input job details from the user
 Job input_job() {
     Job job;
-    
-    flush_input();  // Ensure stdin is clear before taking input
     
     printf("Enter Job Title: ");
     fgets(job.title, sizeof(job.title), stdin);
@@ -49,14 +51,24 @@ int main() {
     Blockchain bc;
     init_blockchain(&bc);
     int choice;
-    char id[6];
     char keyword[MAX_KEYWORD_LENGTH];
     Job job;
 
+    // Load existing blockchain if file exists
+    if (load_blockchain(&bc, BLOCKCHAIN_FILE)) {
+        printf("Existing blockchain loaded.\n");
+    } else {
+        printf("No existing blockchain found. Starting with an empty chain.\n");
+    }
+
     while (1) {
         print_menu();
-        scanf("%d", &choice);
-        getchar(); // Consume newline
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input. Please enter a number.\n");
+            flush_input();
+            continue;
+        }
+        flush_input();  // Clear any remaining input
 
         switch (choice) {
             case 1: // Add Job
@@ -73,35 +85,34 @@ int main() {
                 keyword[strcspn(keyword, "\n")] = 0; // Remove newline
                 search_jobs(&bc, keyword);
                 break;
-            case 4: // Modify Job
-                printf("Enter Job ID to modify: ");
-                fgets(id, sizeof(id), stdin);
-                id[strcspn(id, "\n")] = 0; // Remove newline
-                job = input_job();
-                if (modify_job(&bc, id, job)) {
-                    printf("Job modified successfully.\n");
-                } else {
-                    printf("Job not found.\n");
-                }
-                break;
-            case 5: // Delete Job
-                printf("Enter Job ID to delete: ");
-                fgets(id, sizeof(id), stdin);
-                id[strcspn(id, "\n")] = 0; // Remove newline
-                if (delete_job(&bc, id)) {
-                    printf("Job deleted successfully.\n");
-                } else {
-                    printf("Job not found.\n");
-                }
-                break;
-            case 6: // Verify Integrity
+            case 4: // Verify Integrity
                 if (verify_integrity(&bc)) {
                     printf("Blockchain integrity verified.\n");
                 } else {
                     printf("Blockchain integrity compromised.\n");
                 }
                 break;
+            case 5: // Save Blockchain
+                if (save_blockchain(&bc, BLOCKCHAIN_FILE)) {
+                    printf("Blockchain saved successfully.\n");
+                } else {
+                    printf("Failed to save blockchain.\n");
+                }
+                break;
+            case 6: // Load Blockchain
+                if (load_blockchain(&bc, BLOCKCHAIN_FILE)) {
+                    printf("Blockchain loaded successfully.\n");
+                } else {
+                    printf("Failed to load blockchain.\n");
+                }
+                break;
             case 7: // Exit
+                printf("Saving blockchain before exiting...\n");
+                if (save_blockchain(&bc, BLOCKCHAIN_FILE)) {
+                    printf("Blockchain saved successfully.\n");
+                } else {
+                    printf("Failed to save blockchain.\n");
+                }
                 printf("Exiting program.\n");
                 return 0;
             default:
