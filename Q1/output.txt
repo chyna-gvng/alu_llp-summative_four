@@ -1,4 +1,4 @@
-Script started on 2024-10-18 13:23:07+03:00 [COMMAND="./job_directory" TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="195" LINES="13"]
+Script started on 2024-10-18 13:39:14+03:00 [COMMAND="./job_directory" TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="195" LINES="13"]
 Existing blockchain loaded.
 
 Job Directory Blockchain Menu:
@@ -56,37 +56,54 @@ Job Directory Blockchain Menu:
 7. Exit
 Enter your choice: 2
 Block 0
-Timestamp: 1729247011
-Nonce: 350
+Timestamp: 1729247981
+Nonce: 21630
 Job ID: J0001
 Title: SWE Intern
 Company: JHA
 Location: KGL
 Description: Soft guru
-Hash: 0000855af13ae8276e5a753eb675971517996ab71e9ee19d55305efe6c8c21c1
+Hash: 0000c02320cebf58a1a8398a284fb251fd9da2cee733ef349f11f8622d38847f
 Previous Hash: N/A
 
 Block 1
-Timestamp: 1729247032
-Nonce: 112131
+Timestamp: 1729248000
+Nonce: 35750
 Job ID: J0002
 Title: DE Intern
 Company: JHA
 Location: NRB
 Description: Data guru
-Hash: 000062cd825365dd134c0413e8cbaf71905a0304eb073d34cfe2ad4e25d5bd09
-Previous Hash: 0000855af13ae8276e5a753eb675971517996ab71e9ee19d55305efe6c8c21c1
+Hash: 0000aa9c2192f9886330a19cbfa7bfad92501ea27224c6a54de1a37eb3176969
+Previous Hash: 0000c02320cebf58a1a8398a284fb251fd9da2cee733ef349f11f8622d38847f
 
 Block 2
-Timestamp: 1729247052
-Nonce: 2854
+Timestamp: 1729248023
+Nonce: 13140
 Job ID: J0003
 Title: BI Intern
 Company: Sybyl
 Location: KPL
 Description: BI guru
-Hash: 000074557f6f4296a0f1b2df0c444fef56fef2caba8ed02b9cf3e42391afd551
-Previous Hash: 000062cd825365dd134c0413e8cbaf71905a0304eb073d34cfe2ad4e25d5bd09
+Hash: 0000cf5360dae74623f18da6974228640d883053b6832472bd5709e92a35d650
+Previous Hash: 0000aa9c2192f9886330a19cbfa7bfad92501ea27224c6a54de1a37eb3176969
+
+
+Job Directory Blockchain Menu:
+1. Add Job
+2. List Jobs
+3. Search Jobs
+4. Verify Integrity
+5. Save Blockchain
+6. Load Blockchain
+7. Exit
+Enter your choice: 3
+Enter search keyword: SWE
+Job ID: J0001
+Title: SWE Intern
+Company: JHA
+Location: KGL
+Description: Soft guru
 
 
 Job Directory Blockchain Menu:
@@ -124,4 +141,4 @@ Saving blockchain before exiting...
 Blockchain saved successfully.
 Exiting program.
 
-Script done on 2024-10-18 13:24:50+03:00 [COMMAND_EXIT_CODE="0"]
+Script done on 2024-10-18 13:41:41+03:00 [COMMAND_EXIT_CODE="0"]
