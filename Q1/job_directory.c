@@ -21,10 +21,10 @@ char* calculate_hash(Block* block) {
     unsigned char hash_bytes[SHA256_DIGEST_LENGTH];
     
     // Concatenate block data into a single string
-    snprintf(buffer, sizeof(buffer), "%d%ld%s%s%s%s%s%s",
+    snprintf(buffer, sizeof(buffer), "%d%ld%s%s%s%s%s%s%d",
              block->index, block->timestamp, block->job.id,
              block->job.title, block->job.company, block->job.location,
-             block->job.description, block->prev_hash);
+             block->job.description, block->prev_hash, block->nonce);
     
     // Calculate SHA256 hash
     SHA256_Init(&sha256);
@@ -39,6 +39,17 @@ char* calculate_hash(Block* block) {
     return hash;
 }
 
+// Mine a block (find a hash with DIFFICULTY leading zeros)
+void mine_block(Block* block) {
+    char* hash;
+    do {
+        block->nonce++;
+        hash = calculate_hash(block);
+    } while (strncmp(hash, "0000", DIFFICULTY) != 0);
+    
+    strcpy(block->hash, hash);
+}
+
 // Add a new job to the blockchain
 void add_job(Blockchain* bc, Job job) {
     Block* new_block = (Block*)malloc(sizeof(Block));
@@ -49,7 +60,7 @@ void add_job(Blockchain* bc, Job job) {
     
     Block* last = bc->head;
     int index = 0;
-    char prev_hash[HASH_SIZE + 1] = {0};
+    char prev_hash[HASH_SIZE + 1] = "N/A";  // Default for genesis block
     
     // Find the last block and get its hash
     if (last) {
@@ -62,6 +73,7 @@ void add_job(Blockchain* bc, Job job) {
     
     new_block->index = index;
     new_block->timestamp = time(NULL);
+    new_block->nonce = 0;
     
     // Generate job ID
     bc->job_count++;
@@ -70,8 +82,8 @@ void add_job(Blockchain* bc, Job job) {
     new_block->job = job;
     strcpy(new_block->prev_hash, prev_hash);
     
-    // Calculate hash after setting all other fields
-    strcpy(new_block->hash, calculate_hash(new_block));
+    // Mine the block
+    mine_block(new_block);
     
     new_block->next = NULL;
     
@@ -86,35 +98,25 @@ void add_job(Blockchain* bc, Job job) {
 // List all jobs in the blockchain
 void list_jobs(Blockchain* bc) {
     Block* current = bc->head;
-    Block* blocks[MAX_JOBS];
-    int count = 0;
     
-    // Store blocks in an array
-    while (current && count < MAX_JOBS) {
-        blocks[count++] = current;
-        current = current->next;
+    if (current == NULL) {
+        printf("No jobs available.\n");
+        return;
     }
     
-    // Print blocks in reverse order (newest first)
-    for (int i = count - 1; i >= 0; i--) {
-        current = blocks[i];
+    while (current) {
         printf("Block %d\n", current->index);
+        printf("Timestamp: %ld\n", current->timestamp);
+        printf("Nonce: %d\n", current->nonce);
         printf("Job ID: %s\n", current->job.id);
         printf("Title: %s\n", current->job.title);
         printf("Company: %s\n", current->job.company);
         printf("Location: %s\n", current->job.location);
         printf("Description: %s\n", current->job.description);
-        printf("Current Hash: %s\n", current->hash);
-        if (current->index > 0) {
-            printf("Previous Hash: %s\n", current->prev_hash);
-        } else {
-            printf("Previous Hash: N/A\n");
-        }
+        printf("Hash: %s\n", current->hash);
+        printf("Previous Hash: %s\n", current->prev_hash);
         printf("\n");
-    }
-    
-    if (count == 0) {
-        printf("No jobs available.\n");
+        current = current->next;
     }
 }
 
@@ -176,62 +178,6 @@ void search_jobs(Blockchain* bc, const char* keyword) {
     }
 }
 
-// Modify an existing job in the blockchain
-int modify_job(Blockchain* bc, const char* id, Job new_job) {
-    Block* current = bc->head;
-    
-    while (current) {
-        if (strcmp(current->job.id, id) == 0) {
-            strcpy(new_job.id, current->job.id);  // Preserve the original ID
-            current->job = new_job;
-            strcpy(current->hash, calculate_hash(current));
-            
-            // Update the prev_hash of the next block if it exists
-            if (current->next) {
-                strcpy(current->next->prev_hash, current->hash);
-                strcpy(current->next->hash, calculate_hash(current->next));
-            }
-            
-            return 1;  // Job found and modified
-        }
-        current = current->next;
-    }
-    
-    return 0;  // Job not found
-}
-
-// Delete a job from the blockchain
-int delete_job(Blockchain* bc, const char* id) {
-    Block* current = bc->head;
-    Block* prev = NULL;
-    
-    while (current) {
-        if (strcmp(current->job.id, id) == 0) {
-            if (prev) {
-                prev->next = current->next;
-                // Update the prev_hash of the next block if it exists
-                if (current->next) {
-                    strcpy(current->next->prev_hash, prev->hash);
-                    strcpy(current->next->hash, calculate_hash(current->next));
-                }
-            } else {
-                bc->head = current->next;
-                // If deleting the first block, update the prev_hash of the new first block
-                if (bc->head) {
-                    strcpy(bc->head->prev_hash, "");
-                    strcpy(bc->head->hash, calculate_hash(bc->head));
-                }
-            }
-            free(current);
-            return 1;  // Job found and deleted
-        }
-        prev = current;
-        current = current->next;
-    }
-    
-    return 0;  // Job not found
-}
-
 // Verify the integrity of the blockchain
 int verify_integrity(Blockchain* bc) {
     Block* current = bc->head;
@@ -239,6 +185,12 @@ int verify_integrity(Blockchain* bc) {
     char prev_hash[HASH_SIZE + 1] = {0};
     
     while (current) {
+        // Verify proof of work
+        if (strncmp(current->hash, "0000", DIFFICULTY) != 0) {
+            printf("Proof of work verification failed for block %d\n", current->index);
+            return 0;
+        }
+        
         // Calculate and verify the hash of the current block
         strcpy(calculated_hash, calculate_hash(current));
         if (strcmp(calculated_hash, current->hash) != 0) {
@@ -264,6 +216,61 @@ int verify_integrity(Blockchain* bc) {
     return 1;  // Integrity verified
 }
 
+// Save the blockchain to a file
+int save_blockchain(Blockchain* bc, const char* filename) {
+    FILE* file = fopen(filename, "wb");
+    if (!file) {
+        printf("Error opening file for writing\n");
+        return 0;
+    }
+    
+    Block* current = bc->head;
+    while (current) {
+        fwrite(current, sizeof(Block), 1, file);
+        current = current->next;
+    }
+    
+    fclose(file);
+    return 1;
+}
+
+// Load the blockchain from a file
+int load_blockchain(Blockchain* bc, const char* filename) {
+    FILE* file = fopen(filename, "rb");
+    if (!file) {
+        printf("Error opening file for reading\n");
+        return 0;
+    }
+    
+    init_blockchain(bc);
+    
+    Block block;
+    Block* prev = NULL;
+    while (fread(&block, sizeof(Block), 1, file) == 1) {
+        Block* new_block = (Block*)malloc(sizeof(Block));
+        if (!new_block) {
+            printf("Memory allocation failed\n");
+            fclose(file);
+            return 0;
+        }
+        
+        *new_block = block;
+        new_block->next = NULL;
+        
+        if (prev == NULL) {
+            bc->head = new_block;
+        } else {
+            prev->next = new_block;
+        }
+        
+        prev = new_block;
+        bc->job_count++;
+    }
+    
+    fclose(file);
+    return 1;
+}
+
 // Print the entire blockchain (for debugging purposes)
 void print_blockchain(Blockchain* bc) {
     Block* current = bc->head;
@@ -277,7 +284,8 @@ void print_blockchain(Blockchain* bc) {
         printf("Location: %s\n", current->job.location);
         printf("Description: %s\n", current->job.description);
         printf("Previous Hash: %s\n", current->prev_hash);
-        printf("Hash: %s\n\n", current->hash);
+        printf("Hash: %s\n", current->hash);
+        printf("Nonce: %d\n\n", current->nonce);
         current = current->next;
     }
 }
